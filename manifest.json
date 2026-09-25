@@ -1,1 +1,10 @@
-
+{
+  "name": "Ramsey Calculator",
+  "short_name": "Ramsey Calc",
+  "start_url": "/ramsey-calculator/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "description": "A fast, simple and scientific calculator.",
+  "orientation": "portrait"
+}
