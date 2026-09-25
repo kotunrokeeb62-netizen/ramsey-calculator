@@ -10,13 +10,13 @@
             color: #222;
             display: flex;
             justify-content: center;
-            padding: 30px 15px;
+            padding: 25px 15px;
             transition: 0.3s;
         }
 
         .calculator {
             width: 100%;
-            max-width: 400px;
+            max-width: 430px;
             background: white;
             padding: 20px;
             border-radius: 15px;
@@ -40,9 +40,9 @@
             color: #222;
         }
 
-        .mode-button {
+        .top-button {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             padding: 14px;
             font-size: 17px;
             border: none;
@@ -52,15 +52,22 @@
             color: white;
         }
 
+        .scientific {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         button {
-            padding: 16px;
-            font-size: 19px;
+            padding: 15px 8px;
+            font-size: 18px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -72,23 +79,12 @@
             transform: scale(0.95);
         }
 
+        .scientific button {
+            background: #d8d8d8;
+        }
+
         .clear {
             grid-column: span 2;
-        }
-
-        .scientific {
-            display: none;
-            margin-bottom: 10px;
-        }
-
-        .scientific.show {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .scientific button {
-            background: #d9d9d9;
         }
 
         .history {
@@ -130,7 +126,7 @@
             color: white;
         }
 
-        body.dark .mode-button {
+        body.dark .top-button {
             background: #ddd;
             color: #111;
         }
@@ -151,12 +147,16 @@
 
     <h1>Ramsey Calculator</h1>
 
-    <button class="mode-button" onclick="toggleDarkMode()">
+    <button class="top-button" onclick="toggleDarkMode()">
         🌙 Dark Mode
     </button>
 
-    <button class="mode-button" onclick="toggleScientific()">
+    <button class="top-button" onclick="toggleScientific()">
         🧪 Scientific Mode
+    </button>
+
+    <button class="top-button" onclick="toggleAngleMode()">
+        Angle: <span id="angleMode">DEG</span>
     </button>
 
     <input id="display" type="text" readonly>
@@ -166,15 +166,25 @@
 
     <div id="scientificButtons" class="scientific">
 
+        <button onclick="scientificFunction('sin')">sin</button>
+        <button onclick="scientificFunction('cos')">cos</button>
+        <button onclick="scientificFunction('tan')">tan</button>
+        <button onclick="scientificFunction('asin')">sin⁻¹</button>
+
+        <button onclick="scientificFunction('acos')">cos⁻¹</button>
+        <button onclick="scientificFunction('atan')">tan⁻¹</button>
+        <button onclick="scientificFunction('log')">log</button>
+        <button onclick="scientificFunction('ln')">ln</button>
+
         <button onclick="squareRoot()">√</button>
         <button onclick="square()">x²</button>
-        <button onclick="power()">xʸ</button>
+        <button onclick="press('**')">xʸ</button>
         <button onclick="press(Math.PI)">π</button>
 
+        <button onclick="press(Math.E)">e</button>
         <button onclick="percentage()">%</button>
         <button onclick="press('(')">(</button>
         <button onclick="press(')')">)</button>
-        <button onclick="press('**')">xʸ</button>
 
     </div>
 
@@ -230,31 +240,27 @@
 
 let display = document.getElementById("display");
 let historyList = document.getElementById("historyList");
-let scientificButtons =
-    document.getElementById("scientificButtons");
+let angleMode = document.getElementById("angleMode");
+
+let currentAngleMode =
+    localStorage.getItem("angleMode") || "DEG";
 
 
 /* BASIC CALCULATOR */
 
 function press(value) {
-
     display.value += value;
-
 }
 
 
 function clearDisplay() {
-
     display.value = "";
-
 }
 
 
 function backspace() {
-
     display.value =
         display.value.slice(0, -1);
-
 }
 
 
@@ -266,17 +272,19 @@ function calculate() {
 
     try {
 
-        if (display.value.includes("/0")) {
+        let expression = display.value;
 
-            display.value =
-                "Cannot divide by zero";
-
+        if (expression.includes("/0")) {
+            display.value = "Cannot divide by zero";
             return;
         }
 
-        let expression = display.value;
-
         let answer = eval(expression);
+
+        if (!Number.isFinite(answer)) {
+            display.value = "Invalid result";
+            return;
+        }
 
         let calculation =
             expression + " = " + answer;
@@ -285,19 +293,179 @@ function calculate() {
 
         addToHistory(calculation);
 
-    }
+    } catch {
 
-    catch {
-
-        display.value =
-            "Invalid calculation";
+        display.value = "Invalid calculation";
 
     }
-
 }
 
 
-/* SCIENTIFIC FUNCTIONS */
+/* ANGLE MODE */
+
+function toggleAngleMode() {
+
+    if (currentAngleMode === "DEG") {
+        currentAngleMode = "RAD";
+    } else {
+        currentAngleMode = "DEG";
+    }
+
+    angleMode.textContent = currentAngleMode;
+
+    localStorage.setItem(
+        "angleMode",
+        currentAngleMode
+    );
+}
+
+
+angleMode.textContent = currentAngleMode;
+
+
+/* TRIGONOMETRY */
+
+function toRadians(number) {
+
+    if (currentAngleMode === "DEG") {
+        return number * Math.PI / 180;
+    }
+
+    return number;
+}
+
+
+function fromRadians(number) {
+
+    if (currentAngleMode === "DEG") {
+        return number * 180 / Math.PI;
+    }
+
+    return number;
+}
+
+
+function scientificFunction(type) {
+
+    if (display.value === "") {
+        return;
+    }
+
+    let number = Number(display.value);
+    let answer;
+    let calculation;
+
+    if (!Number.isFinite(number)) {
+        display.value = "Invalid number";
+        return;
+    }
+
+
+    if (type === "sin") {
+
+        answer = Math.sin(toRadians(number));
+        calculation = "sin(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "cos") {
+
+        answer = Math.cos(toRadians(number));
+        calculation = "cos(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "tan") {
+
+        let radians = toRadians(number);
+
+        if (
+            Math.abs(Math.cos(radians)) < 0.0000000001
+        ) {
+            display.value = "Undefined";
+            return;
+        }
+
+        answer = Math.tan(radians);
+        calculation = "tan(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "asin") {
+
+        if (number < -1 || number > 1) {
+            display.value = "Invalid number";
+            return;
+        }
+
+        answer = fromRadians(Math.asin(number));
+        calculation = "sin⁻¹(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "acos") {
+
+        if (number < -1 || number > 1) {
+            display.value = "Invalid number";
+            return;
+        }
+
+        answer = fromRadians(Math.acos(number));
+        calculation = "cos⁻¹(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "atan") {
+
+        answer = fromRadians(Math.atan(number));
+        calculation = "tan⁻¹(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "log") {
+
+        if (number <= 0) {
+            display.value = "Invalid number";
+            return;
+        }
+
+        answer = Math.log10(number);
+        calculation = "log(" + number + ") = " + answer;
+
+    }
+
+
+    else if (type === "ln") {
+
+        if (number <= 0) {
+            display.value = "Invalid number";
+            return;
+        }
+
+        answer = Math.log(number);
+        calculation = "ln(" + number + ") = " + answer;
+
+    }
+
+
+    if (!Number.isFinite(answer)) {
+        display.value = "Invalid result";
+        return;
+    }
+
+    display.value = answer;
+
+    addToHistory(calculation);
+}
+
+
+/* SQUARE ROOT */
 
 function squareRoot() {
 
@@ -307,11 +475,8 @@ function squareRoot() {
 
     let number = Number(display.value);
 
-    if (number < 0) {
-
-        display.value =
-            "Invalid number";
-
+    if (number < 0 || !Number.isFinite(number)) {
+        display.value = "Invalid number";
         return;
     }
 
@@ -323,9 +488,10 @@ function squareRoot() {
     display.value = answer;
 
     addToHistory(calculation);
-
 }
 
+
+/* SQUARE */
 
 function square() {
 
@@ -335,6 +501,11 @@ function square() {
 
     let number = Number(display.value);
 
+    if (!Number.isFinite(number)) {
+        display.value = "Invalid number";
+        return;
+    }
+
     let answer = number * number;
 
     let calculation =
@@ -343,20 +514,10 @@ function square() {
     display.value = answer;
 
     addToHistory(calculation);
-
 }
 
 
-function power() {
-
-    if (display.value === "") {
-        return;
-    }
-
-    display.value += "**";
-
-}
-
+/* PERCENTAGE */
 
 function percentage() {
 
@@ -366,6 +527,11 @@ function percentage() {
 
     let number = Number(display.value);
 
+    if (!Number.isFinite(number)) {
+        display.value = "Invalid number";
+        return;
+    }
+
     let answer = number / 100;
 
     let calculation =
@@ -374,7 +540,6 @@ function percentage() {
     display.value = answer;
 
     addToHistory(calculation);
-
 }
 
 
@@ -382,8 +547,13 @@ function percentage() {
 
 function toggleScientific() {
 
-    scientificButtons.classList.toggle("show");
+    let scientificButtons =
+        document.getElementById("scientificButtons");
 
+    scientificButtons.style.display =
+        scientificButtons.style.display === "none"
+            ? "grid"
+            : "none";
 }
 
 
@@ -394,13 +564,11 @@ function addToHistory(calculation) {
     let item =
         document.createElement("li");
 
-    item.textContent =
-        calculation;
+    item.textContent = calculation;
 
     historyList.appendChild(item);
 
     saveHistory();
-
 }
 
 
@@ -410,7 +578,6 @@ function saveHistory() {
         "calculatorHistory",
         historyList.innerHTML
     );
-
 }
 
 
@@ -422,12 +589,9 @@ function loadHistory() {
         );
 
     if (savedHistory) {
-
         historyList.innerHTML =
             savedHistory;
-
     }
-
 }
 
 
@@ -438,7 +602,6 @@ function clearHistory() {
     localStorage.removeItem(
         "calculatorHistory"
     );
-
 }
 
 
@@ -457,17 +620,13 @@ function toggleDarkMode() {
             "on"
         );
 
-    }
-
-    else {
+    } else {
 
         localStorage.setItem(
             "darkMode",
             "off"
         );
-
     }
-
 }
 
 
