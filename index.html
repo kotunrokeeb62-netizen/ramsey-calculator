@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ramsey Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        .calculator {
+            width: 100%;
+            max-width: 380px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #display {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px;
+            font-size: 24px;
+            text-align: right;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 18px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .clear {
+            grid-column: span 2;
+        }
+
+        .history {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f7f7f7;
+            border-radius: 10px;
+        }
+
+        #historyList {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <h1>Ramsey Calculator</h1>
+
+    <input id="display" type="text" readonly>
+
+    <div class="buttons">
+
+        <button onclick="press('7')">7</button>
+        <button onclick="press('8')">8</button>
+        <button onclick="press('9')">9</button>
+        <button onclick="press('/')">÷</button>
+
+        <button onclick="press('4')">4</button>
+        <button onclick="press('5')">5</button>
+        <button onclick="press('6')">6</button>
+        <button onclick="press('*')">×</button>
+
+        <button onclick="press('1')">1</button>
+        <button onclick="press('2')">2</button>
+        <button onclick="press('3')">3</button>
+        <button onclick="press('-')">−</button>
+
+        <button onclick="press('0')">0</button>
+        <button onclick="press('.')">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="press('+')">+</button>
+
+        <button class="clear" onclick="clearDisplay()">CLEAR</button>
+        <button onclick="backspace()">⌫</button>
+
+    </div>
+
+    <div class="history">
+        <h3>History</h3>
+
+        <ul id="historyList"></ul>
+
+        <button onclick="clearHistory()">Clear History</button>
+    </div>
+
+</div>
+
+<script>
+
+let display = document.getElementById("display");
+let historyList = document.getElementById("historyList");
+
+
+function press(value) {
+    display.value += value;
+}
+
+
+function clearDisplay() {
+    display.value = "";
+}
+
+
+function backspace() {
+    display.value = display.value.slice(0, -1);
+}
+
+
+function calculate() {
+
+    if (display.value === "") {
+        return;
+    }
+
+    try {
+
+        if (display.value.includes("/0")) {
+            display.value = "Cannot divide by zero";
+            return;
+        }
+
+        let answer = eval(display.value);
+
+        let calculation = display.value + " = " + answer;
+
+        display.value = answer;
+
+        let item = document.createElement("li");
+
+        item.textContent = calculation;
+
+        historyList.appendChild(item);
+
+    } catch {
+
+        display.value = "Invalid calculation";
+
+    }
+}
+
+
+function clearHistory() {
+    historyList.innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
