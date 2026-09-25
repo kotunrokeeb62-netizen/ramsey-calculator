@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ramsey Calculator</title>
+    <title>Ramsey Scientific Calculator</title>
 
     <style>
         body {
@@ -16,12 +16,11 @@
 
         .calculator {
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            transition: 0.3s;
         }
 
         h1 {
@@ -41,6 +40,18 @@
             color: #222;
         }
 
+        .mode-button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 14px;
+            font-size: 17px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #333;
+            color: white;
+        }
+
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -48,14 +59,13 @@
         }
 
         button {
-            padding: 18px;
-            font-size: 20px;
+            padding: 16px;
+            font-size: 19px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             background: #e6e6e6;
             color: #222;
-            transition: 0.2s;
         }
 
         button:active {
@@ -66,11 +76,19 @@
             grid-column: span 2;
         }
 
-        .dark-mode {
-            width: 100%;
-            margin-bottom: 15px;
-            background: #333;
-            color: white;
+        .scientific {
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .scientific.show {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .scientific button {
+            background: #d9d9d9;
         }
 
         .history {
@@ -78,7 +96,6 @@
             padding: 10px;
             background: #f7f7f7;
             border-radius: 10px;
-            transition: 0.3s;
         }
 
         #historyList {
@@ -90,6 +107,8 @@
             font-size: 16px;
             padding: 12px;
         }
+
+        /* DARK MODE */
 
         body.dark {
             background: #111;
@@ -111,9 +130,13 @@
             color: white;
         }
 
-        body.dark .dark-mode {
+        body.dark .mode-button {
             background: #ddd;
             color: #111;
+        }
+
+        body.dark .scientific button {
+            background: #555;
         }
 
         body.dark .history {
@@ -128,11 +151,35 @@
 
     <h1>Ramsey Calculator</h1>
 
-    <button class="dark-mode" onclick="toggleDarkMode()">
+    <button class="mode-button" onclick="toggleDarkMode()">
         🌙 Dark Mode
     </button>
 
+    <button class="mode-button" onclick="toggleScientific()">
+        🧪 Scientific Mode
+    </button>
+
     <input id="display" type="text" readonly>
+
+
+    <!-- SCIENTIFIC BUTTONS -->
+
+    <div id="scientificButtons" class="scientific">
+
+        <button onclick="squareRoot()">√</button>
+        <button onclick="square()">x²</button>
+        <button onclick="power()">xʸ</button>
+        <button onclick="press(Math.PI)">π</button>
+
+        <button onclick="percentage()">%</button>
+        <button onclick="press('(')">(</button>
+        <button onclick="press(')')">)</button>
+        <button onclick="press('**')">xʸ</button>
+
+    </div>
+
+
+    <!-- NORMAL BUTTONS -->
 
     <div class="buttons">
 
@@ -161,13 +208,18 @@
 
     </div>
 
+
+    <!-- HISTORY -->
+
     <div class="history">
 
         <h3>History</h3>
 
         <ul id="historyList"></ul>
 
-        <button onclick="clearHistory()">Clear History</button>
+        <button onclick="clearHistory()">
+            Clear History
+        </button>
 
     </div>
 
@@ -178,22 +230,31 @@
 
 let display = document.getElementById("display");
 let historyList = document.getElementById("historyList");
+let scientificButtons =
+    document.getElementById("scientificButtons");
 
 
-/* CALCULATOR */
+/* BASIC CALCULATOR */
 
 function press(value) {
+
     display.value += value;
+
 }
 
 
 function clearDisplay() {
+
     display.value = "";
+
 }
 
 
 function backspace() {
-    display.value = display.value.slice(0, -1);
+
+    display.value =
+        display.value.slice(0, -1);
+
 }
 
 
@@ -206,7 +267,10 @@ function calculate() {
     try {
 
         if (display.value.includes("/0")) {
-            display.value = "Cannot divide by zero";
+
+            display.value =
+                "Cannot divide by zero";
+
             return;
         }
 
@@ -214,17 +278,112 @@ function calculate() {
 
         let answer = eval(expression);
 
-        let calculation = expression + " = " + answer;
+        let calculation =
+            expression + " = " + answer;
 
         display.value = answer;
 
         addToHistory(calculation);
 
-    } catch {
+    }
 
-        display.value = "Invalid calculation";
+    catch {
+
+        display.value =
+            "Invalid calculation";
 
     }
+
+}
+
+
+/* SCIENTIFIC FUNCTIONS */
+
+function squareRoot() {
+
+    if (display.value === "") {
+        return;
+    }
+
+    let number = Number(display.value);
+
+    if (number < 0) {
+
+        display.value =
+            "Invalid number";
+
+        return;
+    }
+
+    let answer = Math.sqrt(number);
+
+    let calculation =
+        "√" + number + " = " + answer;
+
+    display.value = answer;
+
+    addToHistory(calculation);
+
+}
+
+
+function square() {
+
+    if (display.value === "") {
+        return;
+    }
+
+    let number = Number(display.value);
+
+    let answer = number * number;
+
+    let calculation =
+        number + "² = " + answer;
+
+    display.value = answer;
+
+    addToHistory(calculation);
+
+}
+
+
+function power() {
+
+    if (display.value === "") {
+        return;
+    }
+
+    display.value += "**";
+
+}
+
+
+function percentage() {
+
+    if (display.value === "") {
+        return;
+    }
+
+    let number = Number(display.value);
+
+    let answer = number / 100;
+
+    let calculation =
+        number + "% = " + answer;
+
+    display.value = answer;
+
+    addToHistory(calculation);
+
+}
+
+
+/* SCIENTIFIC MODE */
+
+function toggleScientific() {
+
+    scientificButtons.classList.toggle("show");
+
 }
 
 
@@ -232,9 +391,11 @@ function calculate() {
 
 function addToHistory(calculation) {
 
-    let item = document.createElement("li");
+    let item =
+        document.createElement("li");
 
-    item.textContent = calculation;
+    item.textContent =
+        calculation;
 
     historyList.appendChild(item);
 
@@ -255,13 +416,15 @@ function saveHistory() {
 
 function loadHistory() {
 
-    let savedHistory = localStorage.getItem(
-        "calculatorHistory"
-    );
+    let savedHistory =
+        localStorage.getItem(
+            "calculatorHistory"
+        );
 
     if (savedHistory) {
 
-        historyList.innerHTML = savedHistory;
+        historyList.innerHTML =
+            savedHistory;
 
     }
 
@@ -285,14 +448,18 @@ function toggleDarkMode() {
 
     document.body.classList.toggle("dark");
 
-    if (document.body.classList.contains("dark")) {
+    if (
+        document.body.classList.contains("dark")
+    ) {
 
         localStorage.setItem(
             "darkMode",
             "on"
         );
 
-    } else {
+    }
+
+    else {
 
         localStorage.setItem(
             "darkMode",
@@ -306,14 +473,16 @@ function toggleDarkMode() {
 
 /* LOAD DARK MODE */
 
-if (localStorage.getItem("darkMode") === "on") {
+if (
+    localStorage.getItem("darkMode") === "on"
+) {
 
     document.body.classList.add("dark");
 
 }
 
 
-/* LOAD SAVED HISTORY */
+/* LOAD HISTORY */
 
 loadHistory();
 
