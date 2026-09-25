@@ -1,55 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ramsey Scientific Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramsey Calculator</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            color: #222;
+            background: #eef2f7;
+            color: #172033;
             display: flex;
             justify-content: center;
-            padding: 25px 15px;
-            transition: 0.3s;
+            padding: 20px 12px;
+            transition: 0.3s ease;
         }
 
         .calculator {
             width: 100%;
-            max-width: 430px;
-            background: white;
+            max-width: 460px;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-radius: 24px;
+            background: #ffffff;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .brand-icon {
+            width: 58px;
+            height: 58px;
+            margin: auto;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2563eb;
+            color: white;
+            font-size: 25px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
         }
 
         h1 {
-            text-align: center;
+            margin: 10px 0 4px;
+            font-size: 25px;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.65;
         }
 
         #display {
             width: 100%;
-            box-sizing: border-box;
+            height: 75px;
             padding: 15px;
-            font-size: 24px;
+            margin: 8px 0 14px;
+            border: none;
+            border-radius: 16px;
+            background: #f1f5f9;
+            color: #111827;
+            font-size: 28px;
             text-align: right;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background: white;
-            color: #222;
+            outline: none;
+        }
+
+        .top-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .top-button {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 14px;
-            font-size: 17px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
+            padding: 13px 8px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            background: #333;
-            color: white;
+            background: #e8eef7;
+            color: #172033;
         }
 
         .scientific {
@@ -59,84 +100,136 @@
             margin-bottom: 10px;
         }
 
+        button {
+            border: none;
+            border-radius: 13px;
+            padding: 16px 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #edf1f5;
+            color: #172033;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.94);
+        }
+
+        .scientific button {
+            background: #e1e9f5;
+            font-size: 15px;
+        }
+
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
         }
 
-        button {
-            padding: 15px 8px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background: #e6e6e6;
-            color: #222;
+        .operator {
+            background: #dbeafe;
+            color: #1d4ed8;
         }
 
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .scientific button {
-            background: #d8d8d8;
+        .equals {
+            background: #2563eb;
+            color: white;
         }
 
         .clear {
             grid-column: span 2;
+            background: #fee2e2;
+            color: #dc2626;
         }
 
         .history {
             margin-top: 20px;
-            padding: 10px;
-            background: #f7f7f7;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 16px;
+            background: #f5f7fa;
+        }
+
+        .history h3 {
+            margin-top: 0;
         }
 
         #historyList {
             padding-left: 20px;
             word-break: break-word;
+            max-height: 180px;
+            overflow-y: auto;
         }
 
         .history button {
-            font-size: 16px;
+            width: 100%;
             padding: 12px;
+            font-size: 14px;
         }
 
         /* DARK MODE */
 
         body.dark {
-            background: #111;
-            color: white;
+            background: #070b14;
+            color: #f8fafc;
         }
 
         body.dark .calculator {
-            background: #222;
+            background: #111827;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.45);
         }
 
         body.dark #display {
-            background: #111;
-            color: white;
-            border-color: #555;
-        }
-
-        body.dark button {
-            background: #444;
+            background: #070b14;
             color: white;
         }
 
         body.dark .top-button {
-            background: #ddd;
-            color: #111;
+            background: #1f2937;
+            color: white;
+        }
+
+        body.dark button {
+            background: #1f2937;
+            color: #f8fafc;
         }
 
         body.dark .scientific button {
-            background: #555;
+            background: #263449;
+        }
+
+        body.dark .operator {
+            background: #1e3a8a;
+            color: #bfdbfe;
+        }
+
+        body.dark .equals {
+            background: #2563eb;
+            color: white;
+        }
+
+        body.dark .clear {
+            background: #451a1a;
+            color: #fca5a5;
         }
 
         body.dark .history {
-            background: #333;
+            background: #1a2333;
+        }
+
+        @media (max-width: 380px) {
+            .calculator {
+                padding: 14px;
+            }
+
+            button {
+                padding: 14px 4px;
+                font-size: 16px;
+            }
+
+            #display {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
@@ -145,24 +238,27 @@
 
 <div class="calculator">
 
-    <h1>Ramsey Calculator</h1>
+    <div class="brand">
+        <div class="brand-icon">RC</div>
+        <h1>Ramsey Calculator</h1>
+        <p class="subtitle">Fast • Simple • Scientific</p>
+    </div>
 
-    <button class="top-button" onclick="toggleDarkMode()">
-        🌙 Dark Mode
-    </button>
+    <div class="top-buttons">
+        <button class="top-button" onclick="toggleDarkMode()">
+            🌙 Theme
+        </button>
 
-    <button class="top-button" onclick="toggleScientific()">
-        🧪 Scientific Mode
-    </button>
+        <button class="top-button" onclick="toggleScientific()">
+            🧪 Scientific
+        </button>
 
-    <button class="top-button" onclick="toggleAngleMode()">
-        Angle: <span id="angleMode">DEG</span>
-    </button>
+        <button class="top-button" onclick="toggleAngleMode()">
+            Angle: <span id="angleMode">DEG</span>
+        </button>
+    </div>
 
     <input id="display" type="text" readonly>
-
-
-    <!-- SCIENTIFIC BUTTONS -->
 
     <div id="scientificButtons" class="scientific">
 
@@ -188,38 +284,32 @@
 
     </div>
 
-
-    <!-- NORMAL BUTTONS -->
-
     <div class="buttons">
 
         <button onclick="press('7')">7</button>
         <button onclick="press('8')">8</button>
         <button onclick="press('9')">9</button>
-        <button onclick="press('/')">÷</button>
+        <button class="operator" onclick="press('/')">÷</button>
 
         <button onclick="press('4')">4</button>
         <button onclick="press('5')">5</button>
         <button onclick="press('6')">6</button>
-        <button onclick="press('*')">×</button>
+        <button class="operator" onclick="press('*')">×</button>
 
         <button onclick="press('1')">1</button>
         <button onclick="press('2')">2</button>
         <button onclick="press('3')">3</button>
-        <button onclick="press('-')">−</button>
+        <button class="operator" onclick="press('-')">−</button>
 
         <button onclick="press('0')">0</button>
         <button onclick="press('.')">.</button>
-        <button onclick="calculate()">=</button>
-        <button onclick="press('+')">+</button>
+        <button class="equals" onclick="calculate()">=</button>
+        <button class="operator" onclick="press('+')">+</button>
 
         <button class="clear" onclick="clearDisplay()">CLEAR</button>
         <button onclick="backspace()">⌫</button>
 
     </div>
-
-
-    <!-- HISTORY -->
 
     <div class="history">
 
@@ -227,14 +317,11 @@
 
         <ul id="historyList"></ul>
 
-        <button onclick="clearHistory()">
-            Clear History
-        </button>
+        <button onclick="clearHistory()">Clear History</button>
 
     </div>
 
 </div>
-
 
 <script>
 
@@ -245,36 +332,27 @@ let angleMode = document.getElementById("angleMode");
 let currentAngleMode =
     localStorage.getItem("angleMode") || "DEG";
 
-
-/* BASIC CALCULATOR */
-
 function press(value) {
     display.value += value;
 }
-
 
 function clearDisplay() {
     display.value = "";
 }
 
-
 function backspace() {
-    display.value =
-        display.value.slice(0, -1);
+    display.value = display.value.slice(0, -1);
 }
-
 
 function calculate() {
 
-    if (display.value === "") {
-        return;
-    }
+    if (display.value === "") return;
 
     try {
 
         let expression = display.value;
 
-        if (expression.includes("/0")) {
+        if (/\/0(?!\d)/.test(expression)) {
             display.value = "Cannot divide by zero";
             return;
         }
@@ -300,16 +378,10 @@ function calculate() {
     }
 }
 
-
-/* ANGLE MODE */
-
 function toggleAngleMode() {
 
-    if (currentAngleMode === "DEG") {
-        currentAngleMode = "RAD";
-    } else {
-        currentAngleMode = "DEG";
-    }
+    currentAngleMode =
+        currentAngleMode === "DEG" ? "RAD" : "DEG";
 
     angleMode.textContent = currentAngleMode;
 
@@ -319,37 +391,25 @@ function toggleAngleMode() {
     );
 }
 
-
 angleMode.textContent = currentAngleMode;
-
-
-/* TRIGONOMETRY */
 
 function toRadians(number) {
 
-    if (currentAngleMode === "DEG") {
-        return number * Math.PI / 180;
-    }
-
-    return number;
+    return currentAngleMode === "DEG"
+        ? number * Math.PI / 180
+        : number;
 }
-
 
 function fromRadians(number) {
 
-    if (currentAngleMode === "DEG") {
-        return number * 180 / Math.PI;
-    }
-
-    return number;
+    return currentAngleMode === "DEG"
+        ? number * 180 / Math.PI
+        : number;
 }
-
 
 function scientificFunction(type) {
 
-    if (display.value === "") {
-        return;
-    }
+    if (display.value === "") return;
 
     let number = Number(display.value);
     let answer;
@@ -360,39 +420,28 @@ function scientificFunction(type) {
         return;
     }
 
-
     if (type === "sin") {
-
         answer = Math.sin(toRadians(number));
         calculation = "sin(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "cos") {
-
         answer = Math.cos(toRadians(number));
         calculation = "cos(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "tan") {
 
         let radians = toRadians(number);
 
-        if (
-            Math.abs(Math.cos(radians)) < 0.0000000001
-        ) {
+        if (Math.abs(Math.cos(radians)) < 0.0000000001) {
             display.value = "Undefined";
             return;
         }
 
         answer = Math.tan(radians);
         calculation = "tan(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "asin") {
 
@@ -403,9 +452,7 @@ function scientificFunction(type) {
 
         answer = fromRadians(Math.asin(number));
         calculation = "sin⁻¹(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "acos") {
 
@@ -416,17 +463,13 @@ function scientificFunction(type) {
 
         answer = fromRadians(Math.acos(number));
         calculation = "cos⁻¹(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "atan") {
 
         answer = fromRadians(Math.atan(number));
         calculation = "tan⁻¹(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "log") {
 
@@ -437,9 +480,7 @@ function scientificFunction(type) {
 
         answer = Math.log10(number);
         calculation = "log(" + number + ") = " + answer;
-
     }
-
 
     else if (type === "ln") {
 
@@ -450,9 +491,7 @@ function scientificFunction(type) {
 
         answer = Math.log(number);
         calculation = "ln(" + number + ") = " + answer;
-
     }
-
 
     if (!Number.isFinite(answer)) {
         display.value = "Invalid result";
@@ -460,18 +499,12 @@ function scientificFunction(type) {
     }
 
     display.value = answer;
-
     addToHistory(calculation);
 }
 
-
-/* SQUARE ROOT */
-
 function squareRoot() {
 
-    if (display.value === "") {
-        return;
-    }
+    if (display.value === "") return;
 
     let number = Number(display.value);
 
@@ -482,22 +515,16 @@ function squareRoot() {
 
     let answer = Math.sqrt(number);
 
-    let calculation =
-        "√" + number + " = " + answer;
-
     display.value = answer;
 
-    addToHistory(calculation);
+    addToHistory(
+        "√" + number + " = " + answer
+    );
 }
-
-
-/* SQUARE */
 
 function square() {
 
-    if (display.value === "") {
-        return;
-    }
+    if (display.value === "") return;
 
     let number = Number(display.value);
 
@@ -508,22 +535,16 @@ function square() {
 
     let answer = number * number;
 
-    let calculation =
-        number + "² = " + answer;
-
     display.value = answer;
 
-    addToHistory(calculation);
+    addToHistory(
+        number + "² = " + answer
+    );
 }
-
-
-/* PERCENTAGE */
 
 function percentage() {
 
-    if (display.value === "") {
-        return;
-    }
+    if (display.value === "") return;
 
     let number = Number(display.value);
 
@@ -534,16 +555,12 @@ function percentage() {
 
     let answer = number / 100;
 
-    let calculation =
-        number + "% = " + answer;
-
     display.value = answer;
 
-    addToHistory(calculation);
+    addToHistory(
+        number + "% = " + answer
+    );
 }
-
-
-/* SCIENTIFIC MODE */
 
 function toggleScientific() {
 
@@ -556,13 +573,9 @@ function toggleScientific() {
             : "none";
 }
 
-
-/* HISTORY */
-
 function addToHistory(calculation) {
 
-    let item =
-        document.createElement("li");
+    let item = document.createElement("li");
 
     item.textContent = calculation;
 
@@ -570,7 +583,6 @@ function addToHistory(calculation) {
 
     saveHistory();
 }
-
 
 function saveHistory() {
 
@@ -580,68 +592,38 @@ function saveHistory() {
     );
 }
 
-
 function loadHistory() {
 
     let savedHistory =
-        localStorage.getItem(
-            "calculatorHistory"
-        );
+        localStorage.getItem("calculatorHistory");
 
     if (savedHistory) {
-        historyList.innerHTML =
-            savedHistory;
+        historyList.innerHTML = savedHistory;
     }
 }
-
 
 function clearHistory() {
 
     historyList.innerHTML = "";
 
-    localStorage.removeItem(
-        "calculatorHistory"
-    );
+    localStorage.removeItem("calculatorHistory");
 }
-
-
-/* DARK MODE */
 
 function toggleDarkMode() {
 
     document.body.classList.toggle("dark");
 
-    if (
+    localStorage.setItem(
+        "darkMode",
         document.body.classList.contains("dark")
-    ) {
-
-        localStorage.setItem(
-            "darkMode",
-            "on"
-        );
-
-    } else {
-
-        localStorage.setItem(
-            "darkMode",
-            "off"
-        );
-    }
+            ? "on"
+            : "off"
+    );
 }
 
-
-/* LOAD DARK MODE */
-
-if (
-    localStorage.getItem("darkMode") === "on"
-) {
-
+if (localStorage.getItem("darkMode") === "on") {
     document.body.classList.add("dark");
-
 }
-
-
-/* LOAD HISTORY */
 
 loadHistory();
 
