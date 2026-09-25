@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#2563eb"/>
+  <rect x="100" y="80" width="312" height="352" rx="45" fill="white"/>
+  <text x="256" y="275" text-anchor="middle"
+        font-family="Arial, sans-serif"
+        font-size="120" font-weight="bold"
+        fill="#2563eb">RC</text>
+  <circle cx="165" cy="350" r="14" fill="#2563eb"/>
+  <circle cx="220" cy="350" r="14" fill="#2563eb"/>
+  <circle cx="275" cy="350" r="14" fill="#2563eb"/>
+  <circle cx="330" cy="350" r="14" fill="#2563eb"/>
+</svg>
